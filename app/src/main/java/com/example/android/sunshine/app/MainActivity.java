@@ -1,13 +1,19 @@
 package com.example.android.sunshine.app;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -49,6 +55,7 @@ public class MainActivity extends ActionBarActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
+        private ArrayAdapter<String> mForecastAdapter;
 
         public PlaceholderFragment() {
 
@@ -58,6 +65,37 @@ public class MainActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            //mock string data for weather forcast
+            String [] forecastArray = {
+                "Today - Sunny 75/50",
+                "Tomorrow - Sunny 70/48",
+                "Weds - Cloudy - 68/48",
+                "Thurs - Rain - 65/42",
+                "Fri - Meteor Shower - 100/50",
+                "Sat - Apocalypse - 1000/10000",
+                "Sun - Eternal Darkness - 0/0"
+            };
+
+            //Array list to populate the Listview
+            List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+
+            //This adapter will take the above data and pass it into the listview
+            mForecastAdapter =
+            new ArrayAdapter<String>(
+                //Will set this for the current activity
+                getActivity(),
+                //ID of layout
+                R.layout.list_item_forecast,
+                //ID of text
+                R.id.list_item_forecast_textview,
+                //Data to pass in
+                weekForecast);
+
+            //Find the list view and attach adapter to it.
+            ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+            listView.setAdapter(mForecastAdapter);
+
             return rootView;
         }
     }
