@@ -14,11 +14,11 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles 'proguard-rules.pro'
         }
     }
     buildTypes.each {
-        it.buildConfigField 'String', 'OPEN_WEATHER_MAP_API_KEY', "2de143494c0b295cca9337e1e96b00e0"
+        it.buildConfigField 'String', 'OPEN_WEATHER_MAP_API_KEY', "\"2de143494c0b295cca9337e1e96b00e0\""
     }
 }
 
