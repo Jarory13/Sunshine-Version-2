@@ -60,6 +60,12 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.action_settings) {
+            Intent settings = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settings);
+            return true;
+        }
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
