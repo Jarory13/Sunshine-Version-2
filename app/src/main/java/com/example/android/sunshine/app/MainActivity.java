@@ -23,6 +23,7 @@ public class MainActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new ForecastFragment())
                     .commit();
+            Log.v(LOG_TAG, "this is the on create tag");
         }
     }
 
@@ -54,11 +55,41 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // The activity is about to become visible.
+        Log.v(LOG_TAG, "this is the on start tag");
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The activity has become visible (it is now "resumed").
+        Log.v(LOG_TAG, "this is the on resume tag");
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Another activity is taking focus (this activity is about to be "paused").
+        Log.v(LOG_TAG, "this is the on pause tag");
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // The activity is no longer visible (it is now "stopped")
+        Log.v(LOG_TAG, "this is the on stop tag");
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // The activity is about to be destroyed.
+        Log.v(LOG_TAG, "this is the on destroy tag");
+    }
+
     private void openPreferredLocationInMap () {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String location = prefs.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
-
 
         Uri geolocation = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q", location)
                 .build();
