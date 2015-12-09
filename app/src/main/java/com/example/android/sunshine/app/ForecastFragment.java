@@ -39,6 +39,8 @@ import com.example.android.sunshine.app.data.WeatherContract;
  */
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+
     private static final int FORECAST_LOADER = 0;
     private static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
@@ -71,6 +73,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_COORD_LONG = 8;
     private ForecastAdapter mForecastAdapter;
 
+
+
     public ForecastFragment() {
     }
 
@@ -79,6 +83,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -138,19 +143,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onActivityCreated(savedInstanceState);
     }
 
+    void onLocationChanged () {
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+    }
+
     private void updateWeather() {
         FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
         String location = Utility.getPreferredLocation(getActivity());
         weatherTask.execute(location);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateWeather();
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String locationSetting = Utility.getPreferredLocation(getActivity());
 
@@ -166,7 +169,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 null,
                 sortOrder);
     }
-
 
 
     @Override

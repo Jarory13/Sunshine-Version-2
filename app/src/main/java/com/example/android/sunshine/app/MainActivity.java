@@ -14,18 +14,21 @@ import android.view.MenuItem;
 public class MainActivity extends ActionBarActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private String mLocation;
+    private final String FORECASTFRAGMENT_TAG = "FFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mLocation = Utility.getPreferredLocation(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
+                    .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
                     .commit();
-            Log.v(LOG_TAG, "this is the on create tag");
         }
-    }
+        }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -59,31 +62,36 @@ public class MainActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.
-        Log.v(LOG_TAG, "this is the on start tag");
+
     }
     @Override
     protected void onResume() {
         super.onResume();
         // The activity has become visible (it is now "resumed").
-        Log.v(LOG_TAG, "this is the on resume tag");
+        String location = Utility.getPreferredLocation(this);
+        if (location != null && !location.equals(mLocation)) {
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            ff.onLocationChanged();
+            mLocation = location;
+        }
+
     }
     @Override
     protected void onPause() {
         super.onPause();
         // Another activity is taking focus (this activity is about to be "paused").
-        Log.v(LOG_TAG, "this is the on pause tag");
+
     }
     @Override
     protected void onStop() {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
-        Log.v(LOG_TAG, "this is the on stop tag");
+
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
         // The activity is about to be destroyed.
-        Log.v(LOG_TAG, "this is the on destroy tag");
     }
 
     private void openPreferredLocationInMap () {
