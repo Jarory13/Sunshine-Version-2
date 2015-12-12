@@ -45,7 +45,7 @@ public class Utility {
         } else {
             temp = temperature;
         }
-        return String.format("%.0f", temp);
+        return String.format("%.0f" + "°", temp);
     }
 
     static String formatDate(long dateInMilliseconds) {
