@@ -4,6 +4,7 @@ package com.example.android.sunshine.app;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import android.widget.TextView;
  * from a {@link android.database.Cursor} to a {@link android.widget.ListView}.
  */
 public class ForecastAdapter extends CursorAdapter {
+
+    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private static final int VIEW_TYPE_TODAY = 0;
     private static final int VIEW_TYPE_FUTURE_DAY = 1;
     private static final int VIEW_TYPE_COUNT = 2;
@@ -60,10 +63,28 @@ public class ForecastAdapter extends CursorAdapter {
         // our view is pretty simple here --- just a text view
         // we'll keep the UI functional with a simple (and slow!) binding.
 
-        // Read weather icon ID from cursor
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
-        // Use placeholder image for now
-        viewHolder.iconView.setImageResource(R.drawable.ic_launcher);
+        int viewType = getItemViewType(cursor.getPosition());
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+
+        //get image for forecast
+        switch (viewType) {
+
+            //get colored image for today
+            case VIEW_TYPE_TODAY: {
+                viewHolder.iconView.setImageResource(Utility.
+                        getArtResourceForWeatherCondition(weatherId));
+                break;
+
+            }
+
+            //get grey image for the future.
+            case VIEW_TYPE_FUTURE_DAY: {
+                viewHolder.iconView.setImageResource(Utility.
+                        getIconResourceForWeatherCondition(weatherId));
+                break;
+            }
+        }
+
         //  Read date from cursor
         long date = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, date));
@@ -71,6 +92,9 @@ public class ForecastAdapter extends CursorAdapter {
         //  Read weather forecast from cursor
         String forecast = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
         viewHolder.descriptionView.setText(forecast);
+
+        Log.v(LOG_TAG, "The ID is: " + weatherId + " for date " +
+                date + " with description " + forecast);
 
         // Read user preference for metric or imperial temperature units
         boolean isMetric = Utility.isMetric(context);
