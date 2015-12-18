@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2014 The Android Open Source Project
  *
@@ -15,7 +16,6 @@
  */
 package com.example.android.sunshine.app;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,9 +39,9 @@ import com.example.android.sunshine.app.data.WeatherContract;
  */
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-
     private static final int FORECAST_LOADER = 0;
+    // For the forecast view we're showing only a small subset of the stored data.
+    // Specify the columns we need.
     private static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
             // the content provider joins the location & weather tables in the background
@@ -71,9 +71,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_WEATHER_CONDITION_ID = 6;
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
+
     private ForecastAdapter mForecastAdapter;
 
-
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
+    }
 
     public ForecastFragment() {
     }
@@ -83,7 +94,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
-
     }
 
     @Override
@@ -116,24 +126,23 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 
+        // We'll call our MainActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView adapterView, View view, int position, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                    ((Callback) getActivity())
+                            .onItemSelected(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                                     locationSetting, cursor.getLong(COL_WEATHER_DATE)
                             ));
-                    startActivity(intent);
                 }
             }
         });
-
         return rootView;
     }
 
@@ -143,7 +152,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onActivityCreated(savedInstanceState);
     }
 
-    void onLocationChanged () {
+    // since we read the location when we create the loader, all we need to do is restart things
+    void onLocationChanged( ) {
         updateWeather();
         getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
@@ -154,6 +164,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         weatherTask.execute(location);
     }
 
+    @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String locationSetting = Utility.getPreferredLocation(getActivity());
 
@@ -169,7 +180,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 null,
                 sortOrder);
     }
-
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {

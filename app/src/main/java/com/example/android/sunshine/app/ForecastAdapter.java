@@ -4,7 +4,6 @@ package com.example.android.sunshine.app;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,9 +91,6 @@ public class ForecastAdapter extends CursorAdapter {
         //  Read weather forecast from cursor
         String forecast = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
         viewHolder.descriptionView.setText(forecast);
-
-        Log.v(LOG_TAG, "The ID is: " + weatherId + " for date " +
-                date + " with description " + forecast);
 
         // Read user preference for metric or imperial temperature units
         boolean isMetric = Utility.isMetric(context);
